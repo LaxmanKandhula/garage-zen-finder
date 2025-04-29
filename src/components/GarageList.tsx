@@ -2,7 +2,7 @@
 import React from 'react';
 import { Garage } from '@/models/garage';
 import { Button } from '@/components/ui/button';
-import { Clock, Calendar, Navigation } from 'lucide-react';
+import { Clock, Calendar, Navigation, Wrench, Shield, Car } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface GarageListProps {
@@ -11,7 +11,10 @@ interface GarageListProps {
   onSelect: (garage: Garage) => void;
   onReserve: (garage: Garage) => void;
   onNavigate: (garage: Garage) => void;
+  onRequestService: (garage: Garage) => void;
+  onShowReviews: (garage: Garage) => void;
   isLoading: boolean;
+  isEmergency?: boolean;
 }
 
 const GarageList: React.FC<GarageListProps> = ({
@@ -20,7 +23,10 @@ const GarageList: React.FC<GarageListProps> = ({
   onSelect,
   onReserve,
   onNavigate,
+  onRequestService,
+  onShowReviews,
   isLoading,
+  isEmergency = false,
 }) => {
   const { toast } = useToast();
 
@@ -33,6 +39,15 @@ const GarageList: React.FC<GarageListProps> = ({
     return 'low';
   };
 
+  // Function to determine busy status color
+  const getBusyStatusColor = (level: 'Low' | 'Medium' | 'High') => {
+    switch (level) {
+      case 'Low': return 'bg-green-100 text-green-800';
+      case 'Medium': return 'bg-yellow-100 text-yellow-800';
+      case 'High': return 'bg-red-100 text-red-800';
+    }
+  };
+
   // Function to render the availability indicator
   const renderAvailabilityIndicator = (garage: Garage) => {
     const status = getAvailabilityStatus(garage);
@@ -43,6 +58,49 @@ const GarageList: React.FC<GarageListProps> = ({
         <span className={`text-sm font-medium availability-${status}`}>
           {garage.availableSpots} spots
         </span>
+      </div>
+    );
+  };
+
+  // Function to render the busy status badge
+  const renderBusyStatus = (garage: Garage) => {
+    const statusColor = getBusyStatusColor(garage.busyStatus.level);
+    
+    return (
+      <div className={`text-xs px-2 py-1 rounded-full ${statusColor} inline-flex items-center gap-1`}>
+        <Clock size={12} />
+        <span>
+          {garage.busyStatus.level} wait ({garage.busyStatus.waitTime} min)
+        </span>
+      </div>
+    );
+  };
+
+  // Function to check if any mechanics are available
+  const hasMechanicAvailable = (garage: Garage) => {
+    return garage.mechanics.some(mechanic => mechanic.isAvailable);
+  };
+
+  // Function to render mechanic status
+  const renderMechanicStatus = (garage: Garage) => {
+    const available = hasMechanicAvailable(garage);
+    
+    return (
+      <div className={`text-xs ${available ? 'text-green-700' : 'text-gray-500'} flex items-center gap-1`}>
+        <Wrench size={12} />
+        <span>{available ? 'Mechanics available' : 'No mechanics available'}</span>
+      </div>
+    );
+  };
+
+  // Function to render emergency services badge
+  const renderEmergencyBadge = (garage: Garage) => {
+    if (!garage.emergency.available) return null;
+    
+    return (
+      <div className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full inline-flex items-center gap-1">
+        <Shield size={12} />
+        <span>Emergency: {garage.emergency.responseTime} min</span>
       </div>
     );
   };
@@ -86,6 +144,18 @@ const GarageList: React.FC<GarageListProps> = ({
 
   return (
     <div className="space-y-3">
+      {isEmergency && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-3">
+          <h3 className="font-medium text-red-800 flex items-center gap-1">
+            <Car size={16} />
+            Emergency Assistance
+          </h3>
+          <p className="text-xs text-red-700 mt-1">
+            Showing garages with emergency services ordered by response time
+          </p>
+        </div>
+      )}
+      
       {garages.map((garage) => (
         <div 
           key={garage.id}
@@ -108,14 +178,23 @@ const GarageList: React.FC<GarageListProps> = ({
           </div>
           
           <div className="flex flex-wrap gap-2 my-2">
-            {garage.amenities.slice(0, 3).map((amenity) => (
-              <span key={amenity} className="text-xs py-1 px-2 bg-light-blue-50 text-teal-700 rounded-full">
-                {amenity}
+            {garage.emergency.available && renderEmergencyBadge(garage)}
+            {renderBusyStatus(garage)}
+            {renderMechanicStatus(garage)}
+          </div>
+
+          <div className="flex flex-wrap gap-2 my-2">
+            {garage.services.slice(0, 2).map((service) => (
+              <span 
+                key={service.type} 
+                className={`text-xs py-1 px-2 ${service.available ? 'bg-teal-50 text-teal-700' : 'bg-gray-100 text-gray-600'} rounded-full flex items-center gap-1`}
+              >
+                {service.type} ${service.price}
               </span>
             ))}
-            {garage.amenities.length > 3 && (
+            {garage.services.length > 2 && (
               <span className="text-xs py-1 px-2 bg-gray-100 text-gray-600 rounded-full">
-                +{garage.amenities.length - 3} more
+                +{garage.services.length - 2} more
               </span>
             )}
           </div>
@@ -135,6 +214,15 @@ const GarageList: React.FC<GarageListProps> = ({
                 ))}
               </div>
               <span className="ml-1 text-xs font-medium text-gray-600">{garage.rating.toFixed(1)}</span>
+              <button 
+                className="text-xs text-teal-600 ml-2 hover:underline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShowReviews(garage);
+                }}
+              >
+                {garage.reviews.length} reviews
+              </button>
             </div>
             
             <div className="flex gap-2">
@@ -150,6 +238,21 @@ const GarageList: React.FC<GarageListProps> = ({
                 <Navigation size={14} />
                 Navigate
               </Button>
+              
+              {hasMechanicAvailable(garage) && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-xs flex items-center gap-1 h-8 border-orange-200 hover:bg-orange-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRequestService(garage);
+                  }}
+                >
+                  <Wrench size={14} />
+                  Service
+                </Button>
+              )}
               
               <Button 
                 size="sm" 
