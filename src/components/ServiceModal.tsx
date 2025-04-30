@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Garage, ServiceType, ServiceReservation } from '@/models/garage';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Wrench, Car, X, Shield } from 'lucide-react';
+import { Calendar, Clock, Wrench, Car, X, Shield, IndianRupee } from 'lucide-react';
 import { scheduleService } from '@/services/garageService';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -138,7 +138,9 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
                   }`}
                 >
                   <div className="font-medium">{service.type}</div>
-                  <div className="text-xs text-gray-600">${service.price} • ~{service.duration} min</div>
+                  <div className="text-xs text-gray-600 flex items-center justify-center">
+                    <IndianRupee size={12} className="mr-1" /> {service.price} • ~{service.duration} min
+                  </div>
                 </button>
               ))}
             </div>
@@ -234,8 +236,9 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
               </div>
               <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
                 <span className="font-medium">Total:</span>
-                <span className="font-bold">
-                  ${garage.services.find(s => s.type === selectedService)?.price.toFixed(2) || 0}
+                <span className="font-bold flex items-center">
+                  <IndianRupee size={16} className="mr-1" />
+                  {garage.services.find(s => s.type === selectedService)?.price.toFixed(2) || 0}
                 </span>
               </div>
             </div>

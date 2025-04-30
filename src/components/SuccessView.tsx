@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { GarageReservation, ServiceReservation } from '@/models/garage';
-import { CheckCircle, Navigation, Clock, MapPin, Wrench, Shield } from 'lucide-react';
+import { CheckCircle, Navigation, Clock, MapPin, Wrench, Shield, IndianRupee } from 'lucide-react';
 
 interface SuccessViewProps {
   reservation: GarageReservation | ServiceReservation;
@@ -118,7 +118,10 @@ const SuccessView: React.FC<SuccessViewProps> = ({
               
               <div className="flex justify-between">
                 <span className="text-sm text-gray-700">Total Paid</span>
-                <span className="font-bold">${reservation.price.toFixed(2)}</span>
+                <span className="font-bold flex items-center">
+                  <IndianRupee size={16} className="mr-1" />
+                  {reservation.price.toFixed(2)}
+                </span>
               </div>
             </div>
             

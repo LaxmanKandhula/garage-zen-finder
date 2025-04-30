@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Garage, GarageReservation } from '@/models/garage';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, CreditCard, CircleParking, X } from 'lucide-react';
+import { Calendar, Clock, CreditCard, CircleParking, X, IndianRupee } from 'lucide-react';
 import { reserveSpot } from '@/services/garageService';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -111,7 +111,10 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
           <div className="mb-6 bg-gray-50 p-4 rounded-lg">
             <div className="flex justify-between mb-2">
               <span className="text-gray-600">Hourly Rate:</span>
-              <span className="font-medium">${garage.hourlyRate.toFixed(2)}</span>
+              <span className="font-medium flex items-center">
+                <IndianRupee size={16} className="mr-1" />
+                {garage.hourlyRate.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-gray-600">Duration:</span>
@@ -119,7 +122,10 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
             </div>
             <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">
               <span className="font-medium">Total:</span>
-              <span className="font-bold">${totalPrice.toFixed(2)}</span>
+              <span className="font-bold flex items-center">
+                <IndianRupee size={16} className="mr-1" />
+                {totalPrice.toFixed(2)}
+              </span>
             </div>
           </div>
           

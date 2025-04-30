@@ -2,7 +2,7 @@
 import React from 'react';
 import { Garage } from '@/models/garage';
 import { Button } from '@/components/ui/button';
-import { Clock, Calendar, Navigation, Wrench, Shield, Car } from 'lucide-react';
+import { Clock, Calendar, Navigation, Wrench, Shield, Car, IndianRupee } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface GarageListProps {
@@ -169,7 +169,10 @@ const GarageList: React.FC<GarageListProps> = ({
               <div className="flex items-center mt-1.5 text-sm text-gray-500 gap-2">
                 <span>{garage.distance.toFixed(1)} km away</span>
                 <span>•</span>
-                <span>${garage.hourlyRate.toFixed(2)}/hr</span>
+                <span className="flex items-center">
+                  <IndianRupee size={14} className="mr-0.5" />
+                  {garage.hourlyRate.toFixed(2)}/hr
+                </span>
               </div>
             </div>
             <div>
@@ -189,7 +192,7 @@ const GarageList: React.FC<GarageListProps> = ({
                 key={service.type} 
                 className={`text-xs py-1 px-2 ${service.available ? 'bg-teal-50 text-teal-700' : 'bg-gray-100 text-gray-600'} rounded-full flex items-center gap-1`}
               >
-                {service.type} ${service.price}
+                {service.type} <IndianRupee size={10} className="mx-0.5" />{service.price}
               </span>
             ))}
             {garage.services.length > 2 && (
