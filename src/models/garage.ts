@@ -58,17 +58,20 @@ export interface Garage {
   };
 }
 
-export interface GarageReservation {
+// Base reservation interface with common properties
+export interface BaseReservation {
   garageId: string;
-  startTime: Date;
-  endTime: Date;
-  spotNumber?: string;
   price: number;
   userId?: string;
+  spotNumber?: string;
 }
 
-export interface ServiceReservation {
-  garageId: string;
+export interface GarageReservation extends BaseReservation {
+  startTime: Date;
+  endTime: Date;
+}
+
+export interface ServiceReservation extends BaseReservation {
   serviceType: ServiceType;
   scheduledTime: Date;
   isEmergency: boolean;
@@ -79,6 +82,4 @@ export interface ServiceReservation {
     issue: string;
   };
   mechanicId?: string;
-  price: number;
-  userId?: string;
 }

@@ -16,8 +16,9 @@ import { Shield, Car } from 'lucide-react';
 const Index = () => {
   const [garages, setGarages] = useState<Garage[]>([]);
   const [selectedGarage, setSelectedGarage] = useState<Garage | null>(null);
-  const [reservation, setReservation] = useState<GarageReservation | null>(null);
+  const [parkingReservation, setParkingReservation] = useState<GarageReservation | null>(null);
   const [serviceReservation, setServiceReservation] = useState<ServiceReservation | null>(null);
+  const [activeReservation, setActiveReservation] = useState<GarageReservation | ServiceReservation | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
@@ -183,7 +184,8 @@ const Index = () => {
   
   // Handle successful parking reservation
   const handleReservationSuccess = (reservation: GarageReservation) => {
-    setReservation(reservation);
+    setParkingReservation(reservation);
+    setActiveReservation(reservation);
     setShowReservationModal(false);
     setShowSuccess(true);
   };
@@ -191,6 +193,7 @@ const Index = () => {
   // Handle successful service reservation
   const handleServiceSuccess = (reservation: ServiceReservation) => {
     setServiceReservation(reservation);
+    setActiveReservation(reservation);
     setShowServiceModal(false);
     setShowSuccess(true);
   };
@@ -295,9 +298,9 @@ const Index = () => {
       )}
       
       {/* Success View */}
-      {showSuccess && (reservation || serviceReservation) && selectedGarage && (
+      {showSuccess && activeReservation && selectedGarage && (
         <SuccessView 
-          reservation={reservation || serviceReservation}
+          reservation={activeReservation}
           garageName={selectedGarage.name}
           garageAddress={selectedGarage.address}
           onNavigate={() => handleNavigate(selectedGarage)}
