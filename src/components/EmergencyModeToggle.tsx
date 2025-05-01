@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Car, Shield } from 'lucide-react';
+import { Car, Bike, Shield } from 'lucide-react';
 
 interface EmergencyModeToggleProps {
   isEmergencyMode: boolean;
@@ -21,7 +21,8 @@ const EmergencyModeToggle: React.FC<EmergencyModeToggleProps> = ({
     >
       {isEmergencyMode ? (
         <>
-          <Car size={16} />
+          <Car size={16} className="mr-1" />
+          <Bike size={16} className="mr-1" />
           <span>Exit Emergency</span>
         </>
       ) : (

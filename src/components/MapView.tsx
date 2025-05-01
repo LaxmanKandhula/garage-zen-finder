@@ -1,7 +1,7 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Garage } from '@/models/garage';
-import { MapPin } from 'lucide-react';
+import { MapPin, Bike, Car } from 'lucide-react';
 
 interface MapViewProps {
   garages: Garage[];
@@ -46,6 +46,16 @@ const MapView: React.FC<MapViewProps> = ({
                 >
                   <div className="font-medium">{garage.name}</div>
                   <div className="text-gray-500 text-[10px]">{garage.distance.toFixed(1)} km • {garage.availableSpots} spots</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="flex items-center text-[10px]">
+                      <Car size={12} className="mr-1" /> 
+                      <span>{Math.round(garage.availableSpots * 0.7)} cars</span>
+                    </span>
+                    <span className="flex items-center text-[10px]">
+                      <Bike size={12} className="mr-1" /> 
+                      <span>{Math.round(garage.availableSpots * 0.3)} bikes</span>
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -1,17 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Mail, Phone, Lock, AtSign } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuthStore } from '@/store/authStore';
 
 const Login = () => {
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuthStore();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,11 +32,19 @@ const Login = () => {
 
     // Simulating API call
     setTimeout(() => {
+      if (loginMethod === 'email') {
+        login({ email, name: email.split('@')[0] });
+      } else {
+        login({ phone, name: `User-${phone.slice(-4)}` });
+      }
+      
       setIsLoading(false);
       toast({
         title: "Login Successful",
         description: "Welcome back to GarageZen!",
       });
+      
+      navigate('/');
     }, 1500);
   };
 
@@ -32,11 +53,19 @@ const Login = () => {
 
     // Simulating Google OAuth
     setTimeout(() => {
+      login({ 
+        email: 'user@gmail.com', 
+        name: 'Google User', 
+        photoUrl: 'https://source.unsplash.com/random/200x200/?person' 
+      });
+      
       setIsLoading(false);
       toast({
         title: "Google Login",
         description: "Successfully logged in with Google!",
       });
+      
+      navigate('/');
     }, 1500);
   };
 
@@ -53,7 +82,7 @@ const Login = () => {
         <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-teal-700">GarageZen</h1>
-            <p className="text-gray-600 mt-1">Login to manage your parking and services</p>
+            <p className="text-gray-600 mt-1">Login to find parking for cars and bikes near you</p>
           </div>
 
           <Button 
@@ -103,7 +132,15 @@ const Login = () => {
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
                     <AtSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="email" type="email" className="pl-10" placeholder="you@example.com" required />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      className="pl-10" 
+                      placeholder="you@example.com" 
+                      required 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -113,7 +150,15 @@ const Login = () => {
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="password-email" type="password" className="pl-10" placeholder="••••••••" required />
+                    <Input 
+                      id="password-email" 
+                      type="password" 
+                      className="pl-10" 
+                      placeholder="••••••••" 
+                      required 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </div>
                 </div>
               </TabsContent>
@@ -123,7 +168,15 @@ const Login = () => {
                   <Label htmlFor="phone">Phone Number</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="phone" type="tel" className="pl-10" placeholder="+1 (555) 123-4567" required />
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      className="pl-10" 
+                      placeholder="+1 (555) 123-4567" 
+                      required 
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -133,7 +186,15 @@ const Login = () => {
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="password-phone" type="password" className="pl-10" placeholder="••••••••" required />
+                    <Input 
+                      id="password-phone" 
+                      type="password" 
+                      className="pl-10" 
+                      placeholder="••••••••" 
+                      required 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </div>
                 </div>
               </TabsContent>
