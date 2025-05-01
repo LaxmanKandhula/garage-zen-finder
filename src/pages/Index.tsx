@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Garage, GarageReservation, ServiceReservation } from '@/models/garage';
 import { getGarages, getUserLocation, getEmergencyGarages } from '@/services/garageService';
@@ -167,14 +166,18 @@ const Index = () => {
     setShowReviewsModal(true);
   };
   
-  // Handle navigation
+  // Handle navigation - Updated to open Google Maps
   const handleNavigate = (garage: Garage) => {
     toast({
       title: "Navigation Started",
       description: `Navigating to ${garage.name}`,
     });
-    // In a real app, this would integrate with a mapping service
-    console.log("Navigating to:", garage);
+    
+    // Create Google Maps URL with the garage location
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(garage.address)}`;
+    
+    // Open Google Maps in a new tab
+    window.open(googleMapsUrl, '_blank');
   };
   
   // Handle toggling emergency mode

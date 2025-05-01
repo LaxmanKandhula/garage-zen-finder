@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CircleParking, Menu, Search, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   onRefresh: () => void;
@@ -26,9 +27,11 @@ const Header: React.FC<HeaderProps> = ({ onRefresh }) => {
             <Search size={20} />
           </Button>
           
-          <Button variant="ghost" size="sm" className="text-gray-600">
-            <User size={20} />
-          </Button>
+          <Link to="/login">
+            <Button variant="ghost" size="sm" className="text-gray-600">
+              <User size={20} />
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
